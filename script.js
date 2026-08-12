@@ -389,3 +389,310 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
 });
+document.addEventListener("DOMContentLoaded", function () {
+
+```
+const track = document.querySelector(".gallery-track");
+const cards = document.querySelectorAll(".gallery-card");
+const prev = document.querySelector(".gallery-prev");
+const next = document.querySelector(".gallery-next");
+
+if (!track || cards.length === 0) return;
+
+let index = 0;
+
+function moveSlider() {
+
+    const card = cards[0];
+    const gap = 25;
+    const cardWidth = card.offsetWidth + gap;
+
+    track.scrollTo({
+        left: index * cardWidth,
+        behavior: "smooth"
+    });
+}
+
+next.addEventListener("click", function () {
+
+    if (index < cards.length - 3) {
+        index++;
+    } else {
+        index = 0;
+    }
+
+    moveSlider();
+});
+
+prev.addEventListener("click", function () {
+
+    if (index > 0) {
+        index--;
+    } else {
+        index = cards.length - 3;
+    }
+
+    moveSlider();
+});
+```
+
+});
+/* =====================================================
+   PREMIUM PROJECT GALLERY SLIDER
+===================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const galleryTrack = document.querySelector(".gallery-track");
+    const galleryPrev = document.querySelector(".gallery-prev");
+    const galleryNext = document.querySelector(".gallery-next");
+    const galleryDots = document.querySelector(".gallery-dots");
+
+    if (!galleryTrack || !galleryPrev || !galleryNext) {
+        return;
+    }
+
+    const cards = galleryTrack.querySelectorAll(".gallery-card");
+
+    if (!cards.length) {
+        return;
+    }
+
+    /* -------------------------------------------------
+       CALCULATE SLIDE
+    ------------------------------------------------- */
+
+    function getScrollAmount() {
+
+        const card = cards[0];
+
+        const cardWidth = card.offsetWidth;
+
+        const gap = parseInt(
+            window.getComputedStyle(galleryTrack).gap
+        ) || 0;
+
+        return cardWidth + gap;
+    }
+
+
+    /* -------------------------------------------------
+       NEXT BUTTON
+    ------------------------------------------------- */
+
+    galleryNext.addEventListener("click", function () {
+
+        galleryTrack.scrollBy({
+            left: getScrollAmount(),
+            behavior: "smooth"
+        });
+
+    });
+
+
+    /* -------------------------------------------------
+       PREVIOUS BUTTON
+    ------------------------------------------------- */
+
+    galleryPrev.addEventListener("click", function () {
+
+        galleryTrack.scrollBy({
+            left: -getScrollAmount(),
+            behavior: "smooth"
+        });
+
+    });
+
+
+    /* -------------------------------------------------
+       DRAG TO SCROLL
+    ------------------------------------------------- */
+
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    galleryTrack.addEventListener("mousedown", function (e) {
+
+        isDown = true;
+
+        galleryTrack.style.cursor = "grabbing";
+
+        startX = e.pageX - galleryTrack.offsetLeft;
+
+        scrollLeft = galleryTrack.scrollLeft;
+
+    });
+
+
+    galleryTrack.addEventListener("mouseleave", function () {
+
+        isDown = false;
+
+        galleryTrack.style.cursor = "grab";
+
+    });
+
+
+    galleryTrack.addEventListener("mouseup", function () {
+
+        isDown = false;
+
+        galleryTrack.style.cursor = "grab";
+
+    });
+
+
+    galleryTrack.addEventListener("mousemove", function (e) {
+
+        if (!isDown) return;
+
+        e.preventDefault();
+
+        const x = e.pageX - galleryTrack.offsetLeft;
+
+        const walk = (x - startX) * 1.5;
+
+        galleryTrack.scrollLeft = scrollLeft - walk;
+
+    });
+
+
+    /* -------------------------------------------------
+       MOBILE TOUCH SWIPE
+    ------------------------------------------------- */
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    galleryTrack.addEventListener("touchstart", function (e) {
+
+        touchStartX = e.touches[0].clientX;
+
+    }, { passive: true });
+
+
+    galleryTrack.addEventListener("touchend", function (e) {
+
+        touchEndX = e.changedTouches[0].clientX;
+
+        const difference = touchStartX - touchEndX;
+
+        if (Math.abs(difference) > 50) {
+
+            if (difference > 0) {
+
+                galleryTrack.scrollBy({
+                    left: getScrollAmount(),
+                    behavior: "smooth"
+                });
+
+            } else {
+
+                galleryTrack.scrollBy({
+                    left: -getScrollAmount(),
+                    behavior: "smooth"
+                });
+
+            }
+
+        }
+
+    }, { passive: true });
+
+
+    /* -------------------------------------------------
+       GALLERY DOTS
+    ------------------------------------------------- */
+
+    if (galleryDots) {
+
+        const totalSlides = cards.length;
+
+        cards.forEach(function (card, index) {
+
+            const dot = document.createElement("button");
+
+            dot.className = "gallery-dot";
+
+            dot.type = "button";
+
+            dot.setAttribute(
+                "aria-label",
+                "Go to project " + (index + 1)
+            );
+
+            if (index === 0) {
+
+                dot.classList.add("active");
+
+            }
+
+            dot.addEventListener("click", function () {
+
+                galleryTrack.scrollTo({
+                    left: index * getScrollAmount(),
+                    behavior: "smooth"
+                });
+
+            });
+
+            galleryDots.appendChild(dot);
+
+        });
+
+
+        const dots = galleryDots.querySelectorAll(".gallery-dot");
+
+
+        galleryTrack.addEventListener("scroll", function () {
+
+            const currentIndex = Math.round(
+                galleryTrack.scrollLeft / getScrollAmount()
+            );
+
+            dots.forEach(function (dot, index) {
+
+                dot.classList.toggle(
+                    "active",
+                    index === currentIndex
+                );
+
+            });
+
+        });
+
+    }
+
+});
+/* =====================================================
+   AUTOMATIC CLIENT SLIDER
+===================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const clientSlides = document.querySelectorAll(".client-slide");
+
+    if (!clientSlides.length) {
+        return;
+    }
+
+    let currentClient = 0;
+
+    function showNextClient() {
+
+        clientSlides[currentClient].classList.remove("active");
+
+        currentClient++;
+
+        if (currentClient >= clientSlides.length) {
+            currentClient = 0;
+        }
+
+        clientSlides[currentClient].classList.add("active");
+
+    }
+
+    setInterval(showNextClient, 3000);
+
+});
